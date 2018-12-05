@@ -13,8 +13,8 @@ function setup() {
     new Fish(50+random(width-100), 50+random(cHeight-100));
   }
 
-  while(plantsArray.length < 10) {
-    new Plant(50+random(width-100), cHeight);
+  while(plantsArray.length < 25) {
+    new Plant(50+random(cWidth-100), 50+random(cHeight-100));
   }
 }
 
@@ -27,7 +27,11 @@ function draw() {
   plantsArray = plantsArray.filter((plant) => !plant.dead);
   plantsArray.forEach((plant) => {plant.update()});
 
-  //drawGraph();
+  if (frameCount % 180 == 0 && random(1000) < 1) {
+    new Plant(50+random(cWidth-100), 50+random(cHeight-100));
+  }
+
+  drawGraph();
 }
 
 function placeFree(obj, x, y) {
@@ -37,30 +41,41 @@ function placeFree(obj, x, y) {
 }
 
 function drawGraph() {
-  let sugarPopMax = Math.max.apply(null, sugarPop);
-  let foodPopMax = Math.max.apply(null, foodPop);
-  let bugPopMax = Math.max.apply(null, bugPop);
+  if (frameCount % 60 == 0) {
+    collectData();
+  }
+  let plantPopMax = Math.max.apply(null, plantPop);
+  let fishPopMax = Math.max.apply(null, fishPop);
+
   fill(0);
   rect(0, cHeight, width, 150);
   noFill();
   stroke(200,0,0);
+
   beginShape();
-    for (let [i, s] of sugarPop.entries()) {
-      vertex(width/(sugarPop.length+1)*i, height - (s/sugarPopMax * 120));
+    for (let [i, s] of fishPop.entries()) {
+      vertex(width/(fishPop.length+1)*i, height - (s/fishPopMax * 120));
     }
   endShape(OPEN);
 
   stroke(0,200,0);
   beginShape();
-    for (let [i, s] of foodPop.entries()) {
-      vertex(width/(foodPop.length+1)*i, height - (s/foodPopMax * 120));
+    for (let [i, s] of plantPop.entries()) {
+      vertex(width/(plantPop.length+1)*i, height - (s/plantPopMax * 120));
     }
   endShape(OPEN);
 
-  stroke(0,0,200);
-  beginShape();
-    for (let [i, s] of bugPop.entries()) {
-      vertex(width/(bugPop.length+1)*i, height - (s/bugPopMax * 120));
-    }
-  endShape(OPEN);
+  let totalsize = 0;
+  fishArray.forEach((fish) => {totalsize += fish.size;})
+  let avgSize = round(totalsize/fishArray.length);
+  fill(255);
+  noStroke();
+  textSize(16);
+  text("average size: " + avgSize, 10, height-130)
+}
+
+function collectData() {
+  fishPop.push(fishArray.length);
+  plantPop.push(plantsArray.length);
+
 }
