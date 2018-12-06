@@ -8,10 +8,9 @@ class Fish {
 
     this.size = 10;
     this.speed = 3;
-
-    this.xinf = 0;
-    this.yinf = 0;
+    this.hue = 10;
     this.sight = 0;
+
     this.food = 50;
     this.timing = floor(random(120));
 
@@ -38,12 +37,15 @@ class Fish {
       yy += p.y - this.y;
     })
     let theta = atan2(yy,xx);
-    this.xinf = cos(theta);
-    this.yinf = sin(theta);
+    let xinf = 2*cos(theta);
+    let yinf = 2*sin(theta);
+
+    this.xvel = xinf;
+    this.yvel = yinf;
   }
 
   mutate() {
-    this.size += random(-2, 2);
+    this.size += random(-4, 4);
     this.speed += random(-1, 1);
     this.sight += random(-20, 20);
 
@@ -52,11 +54,10 @@ class Fish {
     this.sight = max(this.sight, 0);
 
     this.maxfood = round(this.size*3+20);
-    this.color = color(
-      this.speed*24 + 100,
-      this.size*6 + 50,
-      this.sight
-    )
+
+    this.hue += random(-5, 5);
+    if (this.hue < 0) { this.hue = 100; }
+    if (this.hue > 100) { this.hue = 0; }
   }
 
   draw() {
@@ -64,28 +65,26 @@ class Fish {
     push()
       translate(this.x, this.y);
       noFill();
-      stroke(255,255,255,30);
+      stroke(100,0,100,30);
       ellipse(0, 0, this.sight, this.sight);
       noStroke();
       rotate(this.angle);
-      fill(this.color);
+      fill(this.hue,100,100);
       ellipse(0, 0, this.size*1.25, this.size);
       triangle(-this.size/2, 0, -this.size, -this.size/3, -this.size, this.size/3);
-      // fill(255,255,255,50);
-      // rect(-this.size, -this.size/2-5, this.size*2, 2);
-      // fill(255,155,0,100);
-      // rect(-this.size, -this.size/2-5, (this.food/this.maxfood)*this.size*2, 2);
     pop();
+      fill(100,0,50,50);
+      rect(this.x-this.size, this.y-this.size/2-5, this.size*2, 3);
+      fill(10,100,100,150);
+      rect(this.x-this.size, this.y-this.size/2-5, (this.food/this.maxfood)*this.size*2, 3);
+
   }
 
   move() {
-    this.see();
-    stroke(200,0,255,50)
-    line(this.x, this.y, this.x+this.xinf*50, this.y+this.yinf*50);
     if (frameCount % 120 == this.timing) {
-
-      this.xvel = 2*(this.xinf)+(this.speed)*random(-1,1);
-      this.yvel = 2*(this.yinf)+(this.speed)*random(-1,1);
+      this.see();
+      this.xvel += random(-this.speed, this.speed);
+      this.yvel += random(-this.speed, this.speed);
       this.angle = atan2(this.yvel, this.xvel);
       if (this.food >= 30 && random(100) < 10) {
         this.reproduce();
@@ -109,28 +108,29 @@ class Fish {
 
   reproduce() {
     let fish = new Fish(this.x, this.y);
-    this.food = floor(this.food/2);
+    this.food = floor(this.food/1.5);
     fish.food = this.food;
     fish.size = this.size;
     fish.speed = this.speed;
     fish.sight = this.sight;
+    fish.hue = this.hue;
 
     fish.mutate();
   }
 
   eat() {
-    plantsArray.forEach((plant) => {
-      if (plant.food <= 0) {return;}
-      if (dist(plant.x, plant.y, this.x, this.y) < (plant.size + this.size)) {
-        plant.food-=1;
-        this.food+=1;
-      }
-    })
-
-    if (this.food > this.maxfood) {
+    if (this.food >= this.maxfood) {
       this.food = this.maxfood;
       return;
     }
+
+    plantsArray.forEach((plant) => {
+      if (plant.food <= 0) {return;}
+      if (dist(plant.x, plant.y, this.x, this.y) < (plant.size + this.size)) {
+        plant.food-=2;
+        this.food+=2;
+      }
+    })
   }
 
   update() {

@@ -1,10 +1,10 @@
-const MAXPLANTS = 150;
+const MAXPLANTS = 250;
 
 class Plant {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-    this.food = 20;
+    this.food = 5;
     this.size = 10;
 
     this.canProduce = true;
@@ -16,20 +16,20 @@ class Plant {
 
   draw() {
     noStroke();
-    fill(50,225,0,255*this.food/20);
+    fill(30,100,100,100*this.food/5);
     ellipse(this.x, this.y, this.size, this.size);
   }
 
   grow() {
     if (frameCount % 120 != 0) {return;}
 
-    if (this.food <= 0 && random(100) < 10) {
+    if (random(100) < 2) {
       this.dead = true;
     }
-    if (this.food < 20) {
-      this.food+=2;
+    if (this.food < 5 && random(4) < 1) {
+      this.food+=1;
     }
-    if (plantsArray.length < MAXPLANTS && this.food >= 20 && random(4) < 1) {
+    if (plantsArray.length < MAXPLANTS && this.food >= 2 && random(4) < 1) {
       new Plant(this.x + round(random(-1,1))*this.size, this.y + round(random(-1,1))*this.size);
     }
   }
