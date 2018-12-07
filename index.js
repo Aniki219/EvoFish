@@ -7,6 +7,9 @@ var cHeight = 500;
 
 var fishPop = [];
 var plantPop = [];
+var oldestFishEver = 0;
+var largestFishEver = 0;
+var smallestFishEver = 1000;
 
 function setup() {
   createCanvas(cWidth, cHeight + 150);
@@ -15,7 +18,7 @@ function setup() {
     new Fish(50+random(width-100), 50+random(cHeight-100));
   }
 
-  while(plantsArray.length < 25) {
+  while(plantsArray.length < 35) {
     new Plant(50+random(cWidth-100), 50+random(cHeight-100));
   }
 
@@ -68,14 +71,14 @@ function drawGraph() {
 
   beginShape();
     for (let [i, s] of fishPop.entries()) {
-      vertex(width/(fishPop.length+1)*i, height - (s/fishPopMax * 120));
+      vertex(120+width/(fishPop.length+1)*i, height - (s/fishPopMax * 120));
     }
   endShape(OPEN);
 
-  stroke(50,100,100);
+  stroke(30,100,100);
   beginShape();
     for (let [i, s] of plantPop.entries()) {
-      vertex(width/(plantPop.length+1)*i, height - (s/plantPopMax * 120));
+      vertex(120+width/(plantPop.length+1)*i, height - (s/plantPopMax * 120));
     }
   endShape(OPEN);
 
@@ -86,13 +89,29 @@ function drawGraph() {
   noStroke();
   textSize(10);
   let fishSizes = fishArray.map(f => f.size);
-  text("smallest size: " + round(Math.min.apply(null, fishSizes)), 10, height-130);
-  text("largest size: " + round(Math.max.apply(null, fishSizes)), 10, height-110);
-  text("average size: " + avgSize, 10, height-100)
+  let smallestFish = round(Math.min.apply(null, fishSizes));
+  let largestFish = round(Math.max.apply(null, fishSizes));
+  if (smallestFish < smallestFishEver) {smallestFishEver = smallestFish;}
+  if (largestFish > largestFishEver) {largestFishEver = largestFish;}
+  text("smallest size: " + smallestFish + " / " + smallestFishEver, 10, height-130);
+  text("largest size: " + largestFish + " / " + largestFishEver, 10, height-110);
+  text("average size: " + avgSize, 10, height-100);
+
+  let oldestFishAge = Math.max.apply(null,fishArray.map((f) => f.age));
+  if (oldestFishAge > oldestFishEver) {oldestFishEver = oldestFishAge;}
+  let oldestFish = fishArray.find(f => f.age == oldestFishAge);
+  text("oldest fish: " + round(oldestFishAge/60) + "s", 10, height-80);
+  text("  speed: " + round(oldestFish.speed), 10, height-70);
+  text("  size: " + round(oldestFish.size), 10, height-60);
+  text("  sight: " + round(oldestFish.sight), 10, height-50);
+  text("record oldest fish: " + round(oldestFishEver/60) + "s", 10, height-35);
+    text("total time: " + round(frameCount/60) + "s", 10, height-25);
+  fill(80,100,100,sin(frameCount/10)*50+50);
+  ellipse(oldestFish.x, oldestFish.y, 5, 5);
 }
 
 function collectData() {
-  fishPop.push(fishArray.length);
-  plantPop.push(plantsArray.length);
+  fishPop.push(fishArray.map(f=> f.food).reduce((x,y) => x+y)/fishArray.length);
+  plantPop.push(plantsArray.map(p => p.food).reduce((x,y)=>x+y)/plantsArray.length);
 
 }

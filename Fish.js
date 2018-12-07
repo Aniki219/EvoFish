@@ -6,16 +6,17 @@ class Fish {
     this.xvel = 0;
     this.yvel = 0;
 
-    this.size = 10;
+    this.size = 15;
     this.speed = 3;
     this.hue = 10;
+    this.age = 0;
     this.sight = 0;
 
     this.food = 50;
     this.timing = floor(random(120));
 
     this.mutate();
-
+    this.maxfood = round(this.size*3+10);
 
     this.angle = 0;
     this.dead = false;
@@ -45,6 +46,7 @@ class Fish {
   }
 
   mutate() {
+    if (random(2) < 1) {return;}
     this.size += random(-4, 4);
     this.speed += random(-1, 1);
     this.sight += random(-20, 20);
@@ -52,8 +54,6 @@ class Fish {
     this.size = max(this.size, 5);
     this.speed = max(this.speed, 3);
     this.sight = max(this.sight, 0);
-
-    this.maxfood = round(this.size*3+20);
 
     this.hue += random(-5, 5);
     if (this.hue < 0) { this.hue = 100; }
@@ -64,10 +64,6 @@ class Fish {
     noStroke();
     push()
       translate(this.x, this.y);
-      noFill();
-      stroke(100,0,100,30);
-      ellipse(0, 0, this.sight, this.sight);
-      noStroke();
       rotate(this.angle);
       fill(this.hue,100,100);
       ellipse(0, 0, this.size*1.25, this.size);
@@ -89,7 +85,7 @@ class Fish {
       if (this.food >= 30 && random(100) < 10) {
         this.reproduce();
       }
-      this.food-=round(max((2*this.size + this.speed)/5,1));
+      this.food-=round(max((this.size + this.speed)/5,1));
     }
 
     if (this.food <= 0) {
@@ -137,5 +133,6 @@ class Fish {
     this.move();
     this.draw();
     this.eat();
+    this.age++;
   }
 }
