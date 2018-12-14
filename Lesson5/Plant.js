@@ -8,9 +8,6 @@ class Plant {
     this.size = 10;
 
     this.canProduce = true;
-
-    if (plantsArray.find((plant) => dist(plant.x, plant.y, this.x, this.y) < this.size)) {this.dead = true;}
-    if (this.x < 0 || this.x > cWidth || this.y < 0 || this.y > cHeight) {this.dead = true;}
   }
 
   draw() {
@@ -33,6 +30,10 @@ class Plant {
 
     if (plantsArray.length < MAXPLANTS && this.food >= 2 && random(4) < 1) {
       let plant = new Plant(this.x + round(random(-1,1))*this.size, this.y + round(random(-1,1))*this.size);
+
+      if (plantsArray.find((otherPlant) => dist(plant.x, plant.y, otherPlant.x, otherPlant.y) < this.size)) {return;}
+      if (plant.x < 0 || plant.x > cWidth || plant.y < 0 || plant.y > cHeight) {return;}
+
       plantsArray.push(plant);
     }
   }

@@ -60,6 +60,6 @@ function drawGraph() {
 
 function collectData() {
   fishPop.push(fishArray.map(f=> f.food).reduce((x,y) => x+y)/fishArray.length);
-  plantPop.push(plantsArray.map(p => p.food).reduce((x,y)=>x+y)/plantsArray.length);
+  plantPop.push(plantsArray.map(p => (p.dead)?0:p.food).reduce((x,y)=>x+y)/plantsArray.length);
 
 }
